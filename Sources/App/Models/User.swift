@@ -11,7 +11,10 @@ import Validation
 import Crypto
 import FluentProvider
 import HTTP
-
+enum JsonType {
+    case me
+    case user
+}
 final class User: Model {
     
     let storage = Storage()
@@ -39,15 +42,17 @@ final class User: Model {
     var create_at        = 0
 
     init(phone:String, pw:String) {
-        self.phone = phone;
+        self.phone = phone
+        self.password = pw.md5;
+        self.uuid  = UUID().uuidString.md5
         self.create_at = Int(Date().timeIntervalSince1970)
     }
     init(row: Row) throws {
-        id = try row.get("id")
         uuid = try row.get("uuid")
         phone = try row.get("phone")
         password = try row.get("password")
         avatar = try row.get("avatar")
+        name   = try row.get("name")
         age = try row.get("age")
         gender = try row.get("gender")
         overview = try row.get("overview")
@@ -57,10 +62,10 @@ final class User: Model {
     }
     func makeRow() throws -> Row {
         var row = Row()
-        try row.set("id", id)
         try row.set("uuid", uuid)
         try row.set("phone", phone)
         try row.set("password", password)
+        try row.set("name", name)
         try row.set("avatar", avatar)
         try row.set("age", age)
         try row.set("gender", gender)
@@ -81,6 +86,7 @@ extension User: Preparation {
             users.string("avatar")
             users.string("uuid")
             users.string("overview")
+            users.string("address")
             users.int("age")
             users.int("gender")
             users.int("create_at")
@@ -92,10 +98,20 @@ extension User: Preparation {
     }
 }
 extension User {
-    func makeJSON() throws -> JSON {
+    func makeJSON(_ type : JsonType) throws -> JSON {
         var json = JSON()
-        try json.set("id", id)
         try json.set("uuid", uuid)
+        try json.set("name", name)
+        try json.set("avatar", avatar)
+        try json.set("age", age)
+        try json.set("gender", gender)
+        try json.set("overview", overview)
+        try json.set("address", address)
+        try json.set("isERegister", isERegister)
+        try json.set("create_at", create_at)
+        if type == .me {
+            try json.set("phone", phone)
+        }
         return json
     }
 }
@@ -108,7 +124,7 @@ extension Request {
             if let user_cach = user_caches[session.uuid.string] {
                 user = user_cach
             } else {
-                guard let user_db = try User.makeQuery().filter("id", session.user_id!).first() else {
+                guard let user_db = try User.makeQuery().filter("id", session.user_id).first() else {
                     return nil;
                 }
                 user_caches[session.uuid.string] = user_db

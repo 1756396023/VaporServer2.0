@@ -16,9 +16,7 @@ class UserController {
     }
     func getProfile(_ request: Request) throws -> ResponseRepresentable {
         
-        var json = try request.user()?.makeJSON().object
-        json?.removeValue(forKey: "id")
-        json?.removeValue(forKey: "password")
+        let json = try request.user()?.makeJSON(.me).object
         return try JSON(node: [
             code: 0,
             msg: "success",

@@ -17,6 +17,10 @@ userController.registeredRouting()
 ///load业务
 let loadController  = LoadController()
 loadController.registeredRouting()
+///around业务
+let aroundController = AroundController()
+aroundController.registeredRouting()
+
 //try drop.setup()
 try drop.run()
 

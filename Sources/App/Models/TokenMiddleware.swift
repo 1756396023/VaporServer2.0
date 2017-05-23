@@ -48,7 +48,7 @@ final class TokenMiddleware: Middleware {
         if let _ = user_caches[session.uuid.string] {
             
         } else {
-            guard let user =  try User.makeQuery().filter("id", session.user_id!).first() else {
+            guard let user =  try User.makeQuery().filter("id", session.user_id).first() else {
                 try session.delete()
                 session_caches.removeValue(forKey: token)
                 return try JSON([

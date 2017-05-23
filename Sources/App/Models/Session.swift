@@ -12,7 +12,7 @@ import Crypto
 final class Session: Model {
     let storage = Storage()
     /// 用户id
-    var user_id   : Identifier?
+    var user_id   : Int    = 0
     var uuid      : String = ""
     /// token
     var token     : String?
@@ -32,17 +32,25 @@ final class Session: Model {
         }
     }
     init(user: User) {
-        self.user_id = user.id
+        self.user_id = user.id!.int!
         self.expire_at = Int(Date().timeIntervalSince1970) + 30 * 24 * 60 * 60
         self.token = generateSignInToken(user.id!.int!)
         self.uuid    = user.uuid
     }
     init(row: Row) throws {
+        user_id = try row.get("user_id")
         uuid = try row.get("uuid")
+        token = try row.get("token")
+        expire_at = try row.get("expire_at")
+        push_token = try row.get("push_token")
     }
     func makeRow() throws -> Row {
         var row = Row()
+        try row.set("user_id", user_id)
         try row.set("uuid", uuid)
+        try row.set("token", token)
+        try row.set("expire_at", expire_at)
+        try row.set("push_token", push_token)
         return row
     }
     func generateSignInToken(_ userID: Int) -> String {
@@ -51,7 +59,7 @@ final class Session: Model {
             let userBye =  "\(id)".makeBytes()
             let result = try Hash.make(.md5, userBye)
             let byes =  result.hexString.makeBytes()
-            return byes.base64Encoded.hexString.replacingOccurrences(of: "=", with: "")
+            return byes.base64Encoded.makeString().replacingOccurrences(of: "=", with: "")
         } catch let error {
             print(error)
         }
@@ -63,6 +71,10 @@ extension Session {
         var json = JSON()
         try json.set("id", id)
         try json.set("uuid", uuid)
+        try json.set("user_id", user_id)
+        try json.set("token", token)
+        try json.set("push_token", push_token)
+        try json.set("expire_at", expire_at)
         return json
     }
 }

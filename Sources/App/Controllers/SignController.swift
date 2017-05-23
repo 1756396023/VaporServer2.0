@@ -93,26 +93,26 @@ class SignController {
                 msg : "请输入正确的手机号"
                 ])
         }
-        guard var user =  try User.makeQuery().filter("phone", phone).first() else {
+        guard let user =  try User.makeQuery().filter("phone", phone).first() else {
             return try JSON(node: [
                 code: 1,
                 msg : "未注册"
                 ])
         }
         guard let pw = request.data["pw"]?.string else{
-            return try JSON(node: [
+            return JSON([
                 code: 1,
                 msg : "缺少密码"
                 ])
         }
         if pw.isPassWord == false {
-            return try JSON(node: [
+            return JSON([
                 code: 1,
                 msg : "请输入6-20位数组或字母的密码"
                 ])
         }
         guard user.password == pw.md5 else {
-            return try JSON(node: [
+            return JSON([
                 code: 1,
                 msg : "密码错误"
                 ])
@@ -121,7 +121,7 @@ class SignController {
             user.isERegister = eModel.registerUser(user.uuid, passWord: user.password)
             try user.save()
         }
-        var session = Session.session(user: user)
+        let session = Session.session(user: user)
         try session.save()
         user_caches[user.uuid.string] = user
         session_caches[session.token!] = session
@@ -129,7 +129,7 @@ class SignController {
             code: 0,
             "uuid" : user.uuid,
             "expire_at" : session.expire_at,
-            "token": session.token,
+            "token": session.token ?? "",
             "em_pw"     : user.password,
             msg : "success"
             ])
