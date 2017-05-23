@@ -35,7 +35,7 @@ class LoadController {
             return try JSON(node: [
                 code: 0,
                 msg : "success",
-                "url" : "http://47.93.197.117:8080/download/\(name)"
+                "url" : "http://59.110.223.55:8080/download/\(name)"
                 ])
         } catch {
             return try JSON(node: [
@@ -46,6 +46,6 @@ class LoadController {
     }
     func download(_ request: Request) throws -> ResponseRepresentable {
         let iamgeName = try request.parameters.next(String.self)
-        return Response(redirect: "http://47.93.197.117:8080/images/file/\(iamgeName)")
+        return Response(redirect: "http://59.110.223.55:8080/images/file/\(iamgeName)")
     }
 }
