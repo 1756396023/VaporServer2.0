@@ -22,20 +22,20 @@ class SignController {
     func signup(_ request: Request) throws -> ResponseRepresentable {
         print(request.query ?? "没有参数")
         guard let phone = request.data["phone"]?.string else{
-            return try JSON(node: [
+            return JSON([
                 code: 1,
                 msg : "缺少phone"
                 ])
         }
         if  phone.isPhone == false {
-            return try JSON(node: [
+            return JSON([
                 code: 1,
                 msg : "请输入正确的手机号"
                 ])
         }
         let temp = try User.makeQuery().filter("phone", phone).first()
         guard temp == nil else{
-            return try JSON(node: [
+            return JSON([
                 code: 1,
                 msg : "此电话号码已被注册"
                 ])
@@ -50,29 +50,29 @@ class SignController {
 //            
 //        }
         guard let pw = request.data["pw"]?.string else{
-            return try JSON(node: [
+            return JSON([
                 code: 1,
                 msg : "缺少密码"
                 ])
         }
         if pw.isPassWord == false {
-            return try JSON(node: [
+            return JSON([
                 code: 1,
                 msg : "请输入6-20位数组或字母的密码"
                 ])
         }
-        var user = User(phone: phone, pw: pw)
+        let user = User(phone: phone, pw: pw)
         try user.save()
         //是否成功注册环信
         user.isERegister = eModel.registerUser(user.uuid, passWord: user.password)
-        var session = Session(user:user)
+        let session = Session(user:user)
         try session.save()
         try user.save()
         user_caches[user.uuid.string] = user
         session_caches[session.token!] = session
         return try JSON(node: [
             code: 0,
-            "token": session.token,
+            "token": session.token!,
             "uuid" : user.uuid,
             "expire_at" : session.expire_at,
             "em_pw"     : user.password,
