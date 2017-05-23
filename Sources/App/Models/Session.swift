@@ -20,6 +20,17 @@ final class Session: Model {
     var expire_at : Int = 0
     /// 推送token
     var push_token: String = ""
+    class func session(user: User) -> Session {
+        do {
+            guard let session = try Session.makeQuery().filter("user_id", user.id!).first() else {
+                return Session(user:user)
+            }
+            session.expire_at = Int(Date().timeIntervalSince1970) + 30 * 24 * 60 * 60
+            return session
+        } catch {
+            return Session(user:user)
+        }
+    }
     init(user: User) {
         self.user_id = user.id
         self.expire_at = Int(Date().timeIntervalSince1970) + 30 * 24 * 60 * 60
@@ -68,5 +79,22 @@ extension Session: Preparation {
     }
     static func revert(_ database: Database) throws {
         try database.delete(self)
+    }
+}
+extension Request {
+    func userSession() -> Session? {
+        guard let token = self.data["access_token"]?.string else{
+            return nil
+        }
+        var session : Session?
+        if let session_cach = session_caches[token] {
+            session = session_cach
+        } else {
+            guard let temp_session = try? Session.makeQuery().filter("token", token).first() else {
+                return nil
+            }
+            session = temp_session
+        }
+        return session
     }
 }

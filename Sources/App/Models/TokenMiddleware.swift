@@ -13,7 +13,7 @@ import Foundation
 
 var session_caches = [String : Session]()
 var user_caches    = [String:User]()
-class TokenMiddleware: Middleware {
+final class TokenMiddleware: Middleware {
     
     var user : User?
     func respond(to request: Request, chainingTo next: Responder) throws -> Response {
