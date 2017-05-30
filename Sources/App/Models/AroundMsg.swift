@@ -26,7 +26,14 @@ final class AroundMsg:Model {
     var images    : String = ""
     /// 地址
     var address   : String = ""
-    
+    /// 点赞数
+    var ups_count : Int  = 0
+    /// 评论数
+    var com_count : Int  = 0
+    /// 是否点赞
+    var is_up     : Bool = false
+    /// 设备名称
+    var device    : String = ""
     init(uuid: String) {
         self.uuid = uuid
     }
@@ -37,6 +44,10 @@ final class AroundMsg:Model {
         message = try row.get("message")
         images   = try row.get("images")
         address = try row.get("address")
+        ups_count = try row.get("ups_count")
+        com_count = try row.get("com_count")
+        is_up = try row.get("is_up")
+        device = try row.get("device")
     }
     func makeRow() throws -> Row {
         var row = Row()
@@ -46,6 +57,10 @@ final class AroundMsg:Model {
         try row.set("message", message)
         try row.set("images", images)
         try row.set("address", address)
+        try row.set("ups_count", ups_count)
+        try row.set("com_count", com_count)
+        try row.set("is_up", is_up)
+        try row.set("device", device)
         return row
     }
 }
@@ -57,6 +72,10 @@ extension AroundMsg {
         try json.set("message", message)
         try json.set("images", images)
         try json.set("address", address)
+        try json.set("ups_count", ups_count)
+        try json.set("com_count", com_count)
+        try json.set("is_up", is_up)
+        try json.set("device", device)
         if type == .user {
             try json.set("user", self.user()?.makeJSON(.user))
         } else if type == .me {
@@ -74,6 +93,10 @@ extension AroundMsg: NodeRepresentable {
         try node.set("message", message)
         try node.set("images", images)
         try node.set("address", address)
+        try node.set("ups_count", ups_count)
+        try node.set("com_count", com_count)
+        try node.set("is_up", is_up)
+        try node.set("device", device)
         if let myContext = context as? MyContext{
             if myContext.type == .user {
                 try node.set("user", self.user()?.makeJSON(.user))
@@ -100,14 +123,18 @@ extension AroundMsg {
 }
 extension AroundMsg: Preparation {
     static func prepare(_ database: Database) throws {
-        try database.create(self) { users in
-            users.id()
-            users.string("uuid")
-            users.int("subway_id")
-            users.int("create_at")
-            users.string("message")
-            users.string("images")
-            users.string("address")
+        try database.create(self) { bar in
+            bar.id()
+            bar.string("uuid")
+            bar.int("subway_id")
+            bar.int("create_at")
+            bar.string("message")
+            bar.string("images")
+            bar.string("address")
+            bar.int("ups_count")
+            bar.int("com_count")
+            bar.bool("is_up")
+            bar.string("device")
         }
     }
     static func revert(_ database: Database) throws {
