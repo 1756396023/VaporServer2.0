@@ -25,8 +25,7 @@ class AroundController {
         var aroundQuery = try AroundMsg.makeQuery().sort("create_at", .descending)
         if let subway_id = request.data["subway_id"]?.int {
             aroundQuery = try aroundQuery.filter("subway_id", subway_id)
-        }
-        
+        }        
         if var page = request.data["pagenum"]?.int  {
             if page == 0 {
                 page = 1
