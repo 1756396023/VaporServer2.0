@@ -37,7 +37,7 @@ class AroundController {
         return try JSON(node: [
             code: 0,
             msg: "success",
-            "arounds": arounds.makeNode(in: MyContext(.user)),
+            "arounds": arounds.map{try $0.makeJSON(.user)}
             ])
     }
     func getUserAroundMsgs(_ request: Request) throws -> ResponseRepresentable {

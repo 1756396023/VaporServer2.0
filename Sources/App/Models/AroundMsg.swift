@@ -84,29 +84,6 @@ extension AroundMsg {
         return json
     }
 }
-extension AroundMsg: NodeRepresentable {
-    func makeNode(in context: Context?) throws -> Node {
-        var node = Node(context)
-        try node.set("id", id)
-        try node.set("subway_id", subway_id)
-        try node.set("create_at", create_at)
-        try node.set("message", message)
-        try node.set("images", images)
-        try node.set("address", address)
-        try node.set("ups_count", ups_count)
-        try node.set("com_count", com_count)
-        try node.set("is_up", is_up)
-        try node.set("device", device)
-        if let myContext = context as? MyContext{
-            if myContext.type == .user {
-                try node.set("user", self.user()?.makeJSON(.user))
-            }
-        } else {
-
-        }
-        return node
-    }
-}
 extension AroundMsg {
     func user() throws -> User? {
         if let user = user_caches[uuid] {
