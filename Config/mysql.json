@@ -1,8 +1,8 @@
 {
     "hostname": "127.0.0.1",
     "user": "root",
-    "password": "123123",
-    "database": "vapor2.0",
+    "password": "123123niuhui",
+    "database": "vapor",
     "encoding": "utf8mb4",
     "port": "3306"
 }

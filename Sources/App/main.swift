@@ -1,3 +1,4 @@
+import FluentProvider
 
 let config = try Config()
 try config.setup()
@@ -5,6 +6,15 @@ try config.setup()
 let drop = try Droplet(config)
 drop.database?.log = { query in
     print(query)
+}
+
+drop.get("niuhui") { (req) -> ResponseRepresentable in
+    
+    let user = try User.makeQuery().first()
+    let users = try drop.cache.get((user?.uuid)!)
+//    let userss = User(row: users)
+    let usersss = try User(row: Row(users!))
+    return try JSON(node: users)
 }
 /// 基础api
 let api   = drop.grouped("api")

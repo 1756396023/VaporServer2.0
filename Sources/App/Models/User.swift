@@ -16,7 +16,7 @@ enum JsonType {
     case user
 }
 final class User: Model {
-    
+    /// General implementation should just be `let storage = Storage()`
     let storage = Storage()
     //uuid
     var uuid    : String = ""
@@ -40,7 +40,6 @@ final class User: Model {
     var isERegister : Bool  = false
     //注册时间
     var create_at        = 0
-
     init(phone:String, pw:String) {
         self.phone = phone
         self.password = pw.md5;

@@ -70,6 +70,7 @@ class SignController {
         try user.save()
         user_caches[user.uuid.string] = user
         session_caches[session.token!] = session
+        try drop.cache.set(user.uuid, user.makeJSON(.me))
         return try JSON(node: [
             code: 0,
             "token": session.token!,
